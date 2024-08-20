@@ -11,20 +11,16 @@ function main_menu() {
         echo "节点社区 Discord 社群: https://discord.gg/GbMV5EcNWF"
         echo "退出脚本，请按键盘 ctrl + C 退出即可"
         echo "请选择要执行的操作:"
-        echo "1) 安装 Go 环境"
-        echo "2) 安装并启动节点"
-        echo "3) 退出"
+        echo "1) 安装并启动 Dawn"
+        echo "2) 退出"
 
-        read -p "请输入选项 [1-3]: " choice
+        read -p "请输入选项 [1-2]: " choice
 
         case $choice in
             1)
-                install_go
+                install_and_start_dawn
                 ;;
             2)
-                install_and_start_node
-                ;;
-            3)
                 echo "退出脚本..."
                 exit 0
                 ;;
@@ -35,22 +31,8 @@ function main_menu() {
     done
 }
 
-# 安装 Go 环境的函数
-function install_go() {
-    echo "更新包列表..."
-    sudo apt update
-
-    if ! command -v go &> /dev/null
-    then
-        echo "Go 未安装，开始安装..."
-        sudo apt install -y golang-go
-    else
-        echo "Go 已经安装，跳过安装。"
-    fi
-}
-
-# 安装并启动节点的函数
-function install_and_start_node() {
+# 安装 Go 环境并启动 Dawn 的函数
+function install_and_start_dawn() {
     echo "更新包列表..."
     sudo apt update
 
