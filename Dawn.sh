@@ -46,7 +46,7 @@ function install_and_start_dawn() {
 
     echo "克隆项目..."
     git clone https://github.com/sdohuajia/Dawn-main.git
-    cd Dawn || { echo "无法进入 Dawn 目录"; exit 1; }
+    cd Dawn-main || { echo "无法进入 Dawn-main 目录"; exit 1; }
 
     echo "下载 Go 依赖..."
     go mod download
