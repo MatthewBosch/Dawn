@@ -97,35 +97,46 @@ function install_and_start_dawn() {
 
     read -n 1 -s -r -p "按任意键继续..."
 
-    echo "构建 main.go..."
-    go build -o main main.go
+    echo "构建项目..."
+    go build -o main .
 
     if [ ! -f "main" ]; then
         echo "构建失败，未找到可执行文件 main。"
         exit 1
     fi
 
-    echo "执行 main.go..."
+    echo "执行项目..."
     ./main
+
+    # 执行完成后直接返回主菜单，无需等待用户输入
 }
 
 # 新增的国外服务器运行节点函数
 function run_foreign_server_node() {
     echo "正在配置国外服务器运行节点..."
 
-    # 进入项目目录
-    cd Dawn-main || { echo "无法进入 Dawn-main 目录"; exit 1; }
+   # 进入项目目录
+cd Dawn-main || { echo "无法进入 Dawn-main 目录"; exit 1; }
 
-    echo "构建 main1.go..."
-    go build -o main1 main1.go
+# 编辑 main.go 文件
+echo "编辑 main.go 文件..."
+nano main.go  # 使用 nano 编辑器来编辑 main.go 文件
 
-    if [ ! -f "main1" ]; then
-        echo "重新构建失败，未找到可执行文件 main1。"
-        exit 1
-    fi
+# 重新编译项目
+echo "重新编译项目..."
+go build -o main1 main.go
 
-    echo "执行 main1.go..."
-    ./main1
+# 检查是否成功构建
+if [ ! -f "main" ]; then
+    echo "重新构建失败，未找到可执行文件 main1。"
+    exit 1
+fi
+
+# 执行项目
+echo "执行项目..."
+./main
+
+    # 运行完项目后直接返回主菜单
 }
 
 # 运行主菜单
