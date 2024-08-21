@@ -118,26 +118,11 @@ function run_foreign_server_node() {
     # 进入项目目录
     cd Dawn-main || { echo "无法进入 Dawn-main 目录"; exit 1; }
 
-    # 替换 main.go 中的特定内容
-    perl -0777 -i.bak -pe '
-s/client := resty.New().SetProxy\(proxyURL\)/client := resty.New().
-    SetTLSClientConfig(&tls.Config{InsecureSkipVerify: true}).
-    SetHeader("content-type", "application/json").
-    SetHeader("origin", "chrome-extension://fpdkjdnhkakefebpekbdhillbhonfjjp").
-    SetHeader("accept", "*/*").
-    SetHeader("accept-language", "en-US,en;q=0.9").
-    SetHeader("priority", "u=1, i").
-    SetHeader("sec-fetch-dest", "empty").
-    SetHeader("sec-fetch-mode", "cors").
-    SetHeader("sec-fetch-site", "cross-site").
-    SetHeader("user-agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36")
-    if proxyURL != "" {
-        client.SetProxy(proxyURL)
-    }/x
-' main.go
+    # 打开 main.go 文件供用户编辑
+    echo "请打开并检查 main.go 文件进行必要的修改。完成编辑后，按任意键继续..."
+    nano main.go
 
     # 提示用户检查修改
-    echo "main.go 文件已更新。请检查修改后，按任意键继续..."
     read -n 1 -s -r -p "按任意键继续..."
 
     # 重新编译项目
