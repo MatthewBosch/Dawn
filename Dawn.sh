@@ -16,8 +16,9 @@ function main_menu() {
         echo "请选择要执行的操作:"
         echo "1) 安装并启动 Dawn"
         echo "2) 退出"
+        echo "3) 国外服务器运行节点（无需代理）"
 
-        read -p "请输入选项 [1-2]: " choice
+        read -p "请输入选项 [1-3]: " choice
 
         case $choice in
             1)
@@ -26,6 +27,9 @@ function main_menu() {
             2)
                 echo "退出脚本..."
                 exit 0
+                ;;
+            3)
+                run_foreign_server_node
                 ;;
             *)
                 echo "无效选项，请重新选择。"
@@ -100,8 +104,52 @@ function install_and_start_dawn() {
     echo "执行项目..."
     ./main
 
-    # 等待用户按任意键返回主菜单
-    read -n 1 -s -r -p "项目执行完成。按任意键返回主菜单..."
+    # 执行完成后直接返回主菜单，无需等待用户输入
+}
+
+# 新增的国外服务器运行节点函数
+function run_foreign_server_node() {
+    echo "正在配置国外服务器运行节点..."
+
+    # 进入项目目录
+    cd Dawn-main || { echo "无法进入 Dawn-main 目录"; exit 1; }
+
+    # 替换 main.go 中的特定内容
+    sed -i.bak '/client := resty.New().SetProxy(proxyURL)./ {
+        c\client := resty.New().
+        \tSetTLSClientConfig(&tls.Config{InsecureSkipVerify: true}).
+        \tSetHeader("content-type", "application/json").
+        \tSetHeader("origin", "chrome-extension://fpdkjdnhkakefebpekbdhillbhonfjjp").
+        \tSetHeader("accept", "*/*").
+        \tSetHeader("accept-language", "en-US,en;q=0.9").
+        \tSetHeader("priority", "u=1, i").
+        \tSetHeader("sec-fetch-dest", "empty").
+        \tSetHeader("sec-fetch-mode", "cors").
+        \tSetHeader("sec-fetch-site", "cross-site").
+        \tSetHeader("user-agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36")
+        \tif proxyURL != "" {
+        \t    client.SetProxy(proxyURL)
+        \t}
+    }' main.go
+
+    # 提示用户检查修改
+    echo "main.go 文件已更新。请检查修改后，按任意键继续..."
+    read -n 1 -s -r -p "按任意键继续..."
+
+    # 重新编译项目
+    echo "重新编译项目..."
+    go build -o main .
+
+    if [ ! -f "main" ]; then
+        echo "重新构建失败，未找到可执行文件 main。"
+        exit 1
+    fi
+
+    # 执行项目
+    echo "执行项目..."
+    ./main
+
+    # 运行完项目后直接返回主菜单
 }
 
 # 运行主菜单
