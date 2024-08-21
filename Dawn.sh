@@ -36,30 +36,13 @@ function install_and_start_dawn() {
     echo "更新包列表..."
     sudo apt update
 
-    # 卸载已有 Go 版本（如果有的话）
-    if command -v go &> /dev/null; then
-        echo "Go 已经安装，开始卸载旧版本..."
-        sudo rm -rf /usr/local/go
+    if ! command -v go &> /dev/null
+    then
+        echo "Go 未安装，开始安装..."
+        sudo apt install -y golang-go
+    else
+        echo "Go 已经安装，跳过安装。"
     fi
-
-    echo "安装指定版本的 Go..."
-    GO_VERSION="1.22.3"
-    GO_TAR="go$GO_VERSION.linux-amd64.tar.gz"
-    wget "https://golang.org/dl/$GO_TAR"
-    sudo tar -C /usr/local -xzf $GO_TAR
-
-    # 设置环境变量
-    if ! grep -q "/usr/local/go/bin" ~/.bashrc; then
-        echo "export PATH=\$PATH:/usr/local/go/bin" >> ~/.bashrc
-        source ~/.bashrc
-    fi
-
-    # 验证 Go 版本
-    if ! command -v go &> /dev/null; then
-        echo "Go 安装失败，请检查并重试。"
-        exit 1
-    fi
-    go version
 
     echo "克隆项目..."
     git clone https://github.com/sdohuajia/Dawn-main.git
@@ -74,18 +57,10 @@ function install_and_start_dawn() {
     read -n 1 -s -r -p "按任意键继续..."
 
     echo "构建项目..."
-    if ! go build -o main .; then
-        echo "构建失败，请检查项目设置。"
-        exit 1
-    fi
+    go build -o main .
 
     echo "执行项目..."
-    if [ -f "./main" ]; then
-        ./main
-    else
-        echo "构建失败或 main 文件丢失。"
-        exit 1
-    fi
+    ./main
 
     # 等待用户按任意键返回主菜单
     read -n 1 -s -r -p "项目执行完成。按任意键返回主菜单..."
