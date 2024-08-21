@@ -37,10 +37,9 @@ function install_and_start_dawn() {
     sudo apt update
 
     # 卸载已有 Go 版本（如果有的话）
-    if command -v go &> /dev/null
-    then
+    if command -v go &> /dev/null; then
         echo "Go 已经安装，开始卸载旧版本..."
-        sudo apt remove -y golang-go
+        sudo rm -rf /usr/local/go
     fi
 
     echo "安装指定版本的 Go..."
@@ -50,12 +49,13 @@ function install_and_start_dawn() {
     sudo tar -C /usr/local -xzf $GO_TAR
 
     # 设置环境变量
-    echo "export PATH=\$PATH:/usr/local/go/bin" >> ~/.bashrc
-    source ~/.bashrc
+    if ! grep -q "/usr/local/go/bin" ~/.bashrc; then
+        echo "export PATH=\$PATH:/usr/local/go/bin" >> ~/.bashrc
+        source ~/.bashrc
+    fi
 
     # 验证 Go 版本
-    if ! command -v go &> /dev/null
-    then
+    if ! command -v go &> /dev/null; then
         echo "Go 安装失败，请检查并重试。"
         exit 1
     fi
