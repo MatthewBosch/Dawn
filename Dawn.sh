@@ -115,38 +115,21 @@ function install_and_start_dawn() {
 function run_foreign_server_node() {
     echo "正在配置国外服务器运行节点..."
 
-    # 进入项目目录
-    cd Dawn-main || { echo "无法进入 Dawn-main 目录"; exit 1; }
+   # 进入项目目录
+cd Dawn-main || { echo "无法进入 Dawn-main 目录"; exit 1; }
 
-    sed -i.bak '/client := resty.New().SetProxy(proxyURL)/{
-    c\client := resty.New().
-    \tSetTLSClientConfig(&tls.Config{InsecureSkipVerify: true}).
-    \tSetHeader("content-type", "application/json").
-    \tSetHeader("origin", "chrome-extension://fpdkjdnhkakefebpekbdhillbhonfjjp").
-    \tSetHeader("accept", "*/*").
-    \tSetHeader("accept-language", "en-US,en;q=0.9").
-    \tSetHeader("priority", "u=1, i").
-    \tSetHeader("sec-fetch-dest", "empty").
-    \tSetHeader("sec-fetch-mode", "cors").
-    \tSetHeader("sec-fetch-site", "cross-site").
-    \tSetHeader("user-agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36").
-    \tif proxyURL != "" {
-    \t    client.SetProxy(proxyURL)
-    \t}
-}' main.go
+# 重新编译项目
+echo "重新编译项目..."
+go build -o main1 main1.go
 
-    # 重新编译项目
-    echo "重新编译项目..."
-    go build -o main .
+if [ ! -f "main1" ]; then
+    echo "重新构建失败，未找到可执行文件 main1。"
+    exit 1
+fi
 
-    if [ ! -f "main" ]; then
-        echo "重新构建失败，未找到可执行文件 main。"
-        exit 1
-    fi
-
-    # 执行项目
-    echo "执行项目..."
-    ./main
+# 执行项目
+echo "执行项目..."
+./main1
 
     # 运行完项目后直接返回主菜单
 }
