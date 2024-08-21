@@ -41,11 +41,11 @@ function main_menu() {
 # 安装特定版本 Go 的函数
 function install_go() {
     REQUIRED_GO_VERSION="1.22.3"
-    CURRENT_GO_VERSION=$(go version 2>/dev/null | awk '{print $3}' | sed 's/go//')
+    CURRENT_GO_VERSION=$(go version 2>/dev/null | awk -F ' ' '{print $3}' | sed 's/go//')
 
     if [ "$CURRENT_GO_VERSION" != "$REQUIRED_GO_VERSION" ]; then
         echo "当前 Go 版本 ($CURRENT_GO_VERSION) 不符合要求 ($REQUIRED_GO_VERSION)。正在安装正确版本..."
-        wget https://golang.org/dl/go$REQUIRED_GO_VERSION.linux-amd64.tar.gz
+        wget -q https://golang.org/dl/go$REQUIRED_GO_VERSION.linux-amd64.tar.gz
         sudo rm -rf /usr/local/go
         sudo tar -C /usr/local -xzf go$REQUIRED_GO_VERSION.linux-amd64.tar.gz
         export PATH=$PATH:/usr/local/go/bin
@@ -77,7 +77,11 @@ function install_and_start_dawn() {
     fi
 
     echo "克隆项目..."
-    git clone https://github.com/sdohuajia/Dawn-main.git
+    if [ -d "Dawn-main" ]; then
+        echo "Dawn-main 目录已存在，跳过克隆。"
+    else
+        git clone https://github.com/sdohuajia/Dawn-main.git
+    fi
     cd Dawn-main || { echo "无法进入 Dawn-main 目录"; exit 1; }
 
     if [ ! -f "conf.toml" ]; then
@@ -115,22 +119,22 @@ function run_foreign_server_node() {
     cd Dawn-main || { echo "无法进入 Dawn-main 目录"; exit 1; }
 
     # 替换 main.go 中的特定内容
-    sed -i.bak '/client := resty.New().SetProxy(proxyURL)/, /if proxyURL != "" {/ {
-        c\client := resty.New().
-        \tSetTLSClientConfig(&tls.Config{InsecureSkipVerify: true}).
-        \tSetHeader("content-type", "application/json").
-        \tSetHeader("origin", "chrome-extension://fpdkjdnhkakefebpekbdhillbhonfjjp").
-        \tSetHeader("accept", "*/*").
-        \tSetHeader("accept-language", "en-US,en;q=0.9").
-        \tSetHeader("priority", "u=1, i").
-        \tSetHeader("sec-fetch-dest", "empty").
-        \tSetHeader("sec-fetch-mode", "cors").
-        \tSetHeader("sec-fetch-site", "cross-site").
-        \tSetHeader("user-agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36")
-        \tif proxyURL != "" {
-        \t    client.SetProxy(proxyURL)
-        \t}
-    }' main.go
+    perl -0777 -i.bak -pe '
+s/client := resty.New().SetProxy\(proxyURL\)/client := resty.New().
+    SetTLSClientConfig(&tls.Config{InsecureSkipVerify: true}).
+    SetHeader("content-type", "application/json").
+    SetHeader("origin", "chrome-extension://fpdkjdnhkakefebpekbdhillbhonfjjp").
+    SetHeader("accept", "*/*").
+    SetHeader("accept-language", "en-US,en;q=0.9").
+    SetHeader("priority", "u=1, i").
+    SetHeader("sec-fetch-dest", "empty").
+    SetHeader("sec-fetch-mode", "cors").
+    SetHeader("sec-fetch-site", "cross-site").
+    SetHeader("user-agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36")
+    if proxyURL != "" {
+        client.SetProxy(proxyURL)
+    }/x
+' main.go
 
     # 提示用户检查修改
     echo "main.go 文件已更新。请检查修改后，按任意键继续..."
