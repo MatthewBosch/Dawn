@@ -36,13 +36,25 @@ function install_and_start_dawn() {
     echo "更新包列表..."
     sudo apt update
 
-    if ! command -v go &> /dev/null
+    # 卸载已有 Go 版本（如果有的话）
+    if command -v go &> /dev/null
     then
-        echo "Go 未安装，开始安装..."
-        sudo apt install -y golang-go
-    else
-        echo "Go 已经安装，跳过安装。"
+        echo "Go 已经安装，开始卸载旧版本..."
+        sudo apt remove -y golang-go
     fi
+
+    echo "安装指定版本的 Go..."
+    GO_VERSION="1.22.3"
+    GO_TAR="go$GO_VERSION.linux-amd64.tar.gz"
+    wget "https://golang.org/dl/$GO_TAR"
+    sudo tar -C /usr/local -xzf $GO_TAR
+
+    # 设置环境变量
+    echo "export PATH=\$PATH:/usr/local/go/bin" >> ~/.bashrc
+    source ~/.bashrc
+
+    # 验证 Go 版本
+    go version
 
     echo "克隆项目..."
     git clone https://github.com/sdohuajia/Dawn-main.git
