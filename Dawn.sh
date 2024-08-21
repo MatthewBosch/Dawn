@@ -54,6 +54,11 @@ function install_and_start_dawn() {
     source ~/.bashrc
 
     # 验证 Go 版本
+    if ! command -v go &> /dev/null
+    then
+        echo "Go 安装失败，请检查并重试。"
+        exit 1
+    fi
     go version
 
     echo "克隆项目..."
@@ -69,10 +74,18 @@ function install_and_start_dawn() {
     read -n 1 -s -r -p "按任意键继续..."
 
     echo "构建项目..."
-    go build -o main .
+    if ! go build -o main .; then
+        echo "构建失败，请检查项目设置。"
+        exit 1
+    fi
 
     echo "执行项目..."
-    ./main
+    if [ -f "./main" ]; then
+        ./main
+    else
+        echo "构建失败或 main 文件丢失。"
+        exit 1
+    fi
 
     # 等待用户按任意键返回主菜单
     read -n 1 -s -r -p "项目执行完成。按任意键返回主菜单..."
