@@ -118,7 +118,7 @@ function run_foreign_server_node() {
     # 进入项目目录
     cd Dawn-main || { echo "无法进入 Dawn-main 目录"; exit 1; }
 
-    sed -i.bak '/client := resty.New().SetProxy(proxyURL)/ {
+    sed -i.bak '/client := resty.New().SetProxy(proxyURL)/{
     c\client := resty.New().
     \tSetTLSClientConfig(&tls.Config{InsecureSkipVerify: true}).
     \tSetHeader("content-type", "application/json").
