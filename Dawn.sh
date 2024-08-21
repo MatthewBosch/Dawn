@@ -118,17 +118,13 @@ function run_foreign_server_node() {
    # 进入项目目录
 cd Dawn-main || { echo "无法进入 Dawn-main 目录"; exit 1; }
 
-# 编辑 main.go 文件
-echo "编辑 main.go 文件..."
-nano main.go  # 使用 nano 编辑器来编辑 main.go 文件
-
 # 重新编译项目
 echo "重新编译项目..."
-go build -o main1 main.go
+go build -o main .
 
 # 检查是否成功构建
 if [ ! -f "main" ]; then
-    echo "重新构建失败，未找到可执行文件 main1。"
+    echo "重新构建失败，未找到可执行文件 main。"
     exit 1
 fi
 
