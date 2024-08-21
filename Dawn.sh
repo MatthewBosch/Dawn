@@ -118,10 +118,10 @@ function run_foreign_server_node() {
     # 进入项目目录
     cd Dawn-main || { echo "无法进入 Dawn-main 目录"; exit 1; }
 
-    sed -i '/client := resty.New().SetProxy(proxyURL)/s/SetProxy(proxyURL)./SetTLSClientConfig(&tls.Config{InsecureSkipVerify: true}).\n    SetHeader("content-type", "application/json").\n    SetHeader("origin", "chrome-extension:\/\/fpdkjdnhkakefebpekbdhillbhonfjjp").\n    SetHeader("accept", "*\/\*").\n    SetHeader("accept-language", "en-US,en;q=0.9").\n    SetHeader("priority", "u=1, i").\n    SetHeader("sec-fetch-dest", "empty").\n    SetHeader("sec-fetch-mode", "cors").\n    SetHeader("sec-fetch-site", "cross-site").\n    SetHeader("user-agent", "Mozilla\/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit\/537.36 (KHTML, like Gecko) Chrome\/127.0.0.0 Safari\/537.36")/' main.go
+    sed -i '/client := resty.New().SetProxy(proxyURL)/s/SetProxy(proxyURL)./SetTLSClientConfig(&tls.Config{InsecureSkipVerify: true}).\nSetHeader("content-type", "application/json").\nSetHeader("origin", "chrome-extension:\/\/fpdkjdnhkakefebpekbdhillbhonfjjp").\nSetHeader("accept", "*\/\*").\nSetHeader("accept-language", "en-US,en;q=0.9").\nSetHeader("priority", "u=1, i").\nSetHeader("sec-fetch-dest", "empty").\nSetHeader("sec-fetch-mode", "cors").\nSetHeader("sec-fetch-site", "cross-site").\nSetHeader("user-agent", "Mozilla\/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit\/537.36 (KHTML, like Gecko) Chrome\/127.0.0.0 Safari\/537.36")/' main.go
 
 sed -i '/SetHeader("user-agent", "Mozilla\/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit\/537.36 (KHTML, like Gecko) Chrome\/127.0.0.0 Safari\/537.36")/a\
-if proxyURL != "" {\n    client.SetProxy(proxyURL)\n}' main.go
+if proxyURL != "" {\nclient.SetProxy(proxyURL)\n}' main.go
 
     # 重新编译项目
     echo "重新编译项目..."
