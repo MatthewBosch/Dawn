@@ -115,7 +115,7 @@ function run_foreign_server_node() {
     cd Dawn-main || { echo "无法进入 Dawn-main 目录"; exit 1; }
 
     # 替换 main.go 中的特定内容
-    sed -i.bak '/client := resty.New().SetProxy(proxyURL)./ {
+    sed -i.bak '/client := resty.New().SetProxy(proxyURL)/, /if proxyURL != "" {/ {
         c\client := resty.New().
         \tSetTLSClientConfig(&tls.Config{InsecureSkipVerify: true}).
         \tSetHeader("content-type", "application/json").
