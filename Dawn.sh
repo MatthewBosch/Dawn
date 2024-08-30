@@ -57,7 +57,7 @@ function install_and_start_dawn() {
 # 节点安装功能
 function install_node() {
     install_pm2
-    apt install python3-pip
+    apt install python3-pip -y
     pip3 install pillow ddddocr requests loguru  --break-system-packages
 
     # 获取用户名和密码
