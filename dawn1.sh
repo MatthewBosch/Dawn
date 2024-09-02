@@ -51,7 +51,7 @@ function install_pip() {
 # 安装 Python 包
 function install_python_packages() {
     echo "安装 Python 包..."
-    pip3 install pillow ddddocr requests loguru
+    pip3 install pillow ddddocr requests loguru   --break-system-packages
 }
 
 # 安装并启动 Dawn 的函数
